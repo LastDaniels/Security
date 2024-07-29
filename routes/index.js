@@ -44,7 +44,14 @@ router.post('/login', async function (req, res, next) {
 
         /* 9. Compare passwordHash y userData.password que sean iguales. */
         if (passwordHash === userData.password) {
-          /* 10. En caso de éxito, redirija a '/users' */
+          const options = {
+            expires: new Date(
+              Date.now() + (60 * 1000)
+            )
+          }
+          res.cookie("username", username, options);
+          req.session.loggedin = true;
+          req.session.username = username;
           res.redirect('/users');
         } else {
           /* 11. En caso de fallo, redirija a '/' */
@@ -63,4 +70,10 @@ router.post('/login', async function (req, res, next) {
   }
 
 });
+
+router.get('/logout', function (req, res, next) {
+  req.session.destroy();
+  res.render('index');
+});
+
 module.exports = router;
